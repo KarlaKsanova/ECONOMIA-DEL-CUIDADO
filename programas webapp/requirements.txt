@@ -12,3 +12,4 @@ shapely==2.1.2
 SQLAlchemy==2.0.49
 streamlit==1.52.1
 streamlit-folium==0.25.3
+streamlit-javascript==0.1.5

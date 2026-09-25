@@ -19,6 +19,7 @@ from branca.colormap import linear
 from branca.element import MacroElement, Template
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
+from streamlit_javascript import st_javascript
 from streamlit_folium import st_folium
 
 from database_setup import Base, Oferente, Solicitud
@@ -214,6 +215,23 @@ st.markdown(
         @media (max-width: 768px) {
             .block-container {
                 padding: 1rem 0.75rem 2rem;
+            }
+            [data-testid="stButton"] button {
+                min-height: 3.4rem;
+                width: 100%;
+                border-radius: 14px;
+                font-size: 1.05rem;
+                font-weight: 700;
+            }
+            .mobile-step {
+                border-left: 4px solid #8B5CF6;
+                background: rgba(255, 255, 255, 0.86);
+                border-radius: 0 14px 14px 0;
+                padding: 0.8rem 0.9rem;
+                margin: 0.6rem 0;
+            }
+            .mobile-kpi {
+                margin: 0.45rem 0;
             }
             [data-testid="stAppViewContainer"] h1 {
                 font-size: 1.65rem;
@@ -462,20 +480,24 @@ def _crear_mapa(dataset: pd.DataFrame, metrica: str) -> folium.Map:
     return mapa
 
 
-def _metricas_principales(dataset: pd.DataFrame) -> None:
+def _metricas_principales(
+    dataset: pd.DataFrame, es_movil: bool = False
+) -> None:
     total_guarderias = dataset["No_Guard"].sum()
     total_dependiente = dataset["poblacion_dependiente"].sum()
     total_afectadas = dataset["personas_afectadas"].sum()
+    metricas = [
+        ("Total de guarderías", f"{total_guarderias:,.0f}"),
+        ("Población dependiente", f"{total_dependiente:,.0f} personas"),
+        ("Infantes sin cobertura CACI", f"{total_afectadas:,.0f} personas"),
+    ]
+    if es_movil:
+        for etiqueta, valor in metricas:
+            st.metric(etiqueta, valor)
+        return
     columnas = st.columns(3)
-    columnas[0].metric("Total de guarderías", f"{total_guarderias:,.0f}")
-    columnas[1].metric(
-        "Población dependiente",
-        f"{total_dependiente:,.0f} personas",
-    )
-    columnas[2].metric(
-        "Infantes sin cobertura CACI",
-        f"{total_afectadas:,.0f} personas",
-    )
+    for columna, (etiqueta, valor) in zip(columnas, metricas):
+        columna.metric(etiqueta, valor)
 
 
 def _extraer_porcentaje_macro(indicadores: dict[str, str], nombre: str) -> float:
@@ -497,30 +519,37 @@ def _mostrar_contexto_enut(dataset: pd.DataFrame) -> None:
         "Nota: Los indicadores de la ENUT 2024 reflejan la realidad estructural "
         "del trabajo de cuidado a nivel metropolitano (CDMX)."
     )
-    columnas = st.columns(5)
-    columnas[0].metric(
-        "Personas que realizan cuidado",
-        f"{indicadores['enut_personas_que_cuidan']:,.0f}",
-    )
-    columnas[1].metric(
-        "Población que cuida",
-        f"{indicadores['enut_porcentaje_que_cuida']:.1f}%",
-    )
-    columnas[2].metric(
-        "Horas de cuidado semanales (Mujeres)",
-        f"{indicadores['enut_horas_cuidado_mujeres']:.1f}",
-    )
-    columnas[3].metric(
-        "TNRH aportado por mujeres",
-        f"{_extraer_porcentaje_macro(indicadores_macro, 'Porcentaje del TNRH aportado por mujeres'):.1f}%",
-    )
-    columnas[4].metric(
-        "TNRH en PIB CDMX",
-        f"{_extraer_porcentaje_macro(indicadores_macro, 'Participación del TNRH en el PIB CDMX'):.1f}%",
-    )
+    metricas = [
+        (
+            "Personas que realizan cuidado",
+            f"{indicadores['enut_personas_que_cuidan']:,.0f}",
+        ),
+        ("Población que cuida", f"{indicadores['enut_porcentaje_que_cuida']:.1f}%"),
+        (
+            "Horas de cuidado semanales (Mujeres)",
+            f"{indicadores['enut_horas_cuidado_mujeres']:.1f}",
+        ),
+        (
+            "TNRH aportado por mujeres",
+            f"{_extraer_porcentaje_macro(indicadores_macro, 'Porcentaje del TNRH aportado por mujeres'):.1f}%",
+        ),
+        (
+            "TNRH en PIB CDMX",
+            f"{_extraer_porcentaje_macro(indicadores_macro, 'Participación del TNRH en el PIB CDMX'):.1f}%",
+        ),
+    ]
+    if st.session_state.get("es_movil", False):
+        for etiqueta, valor in metricas:
+            st.markdown('<div class="mobile-kpi">', unsafe_allow_html=True)
+            st.metric(etiqueta, valor)
+            st.markdown("</div>", unsafe_allow_html=True)
+        return
+    columnas = st.columns(len(metricas))
+    for columna, (etiqueta, valor) in zip(columnas, metricas):
+        columna.metric(etiqueta, valor)
 
 
-def mostrar_visor_territorial(dataset) -> None:
+def mostrar_visor_territorial(dataset, es_movil: bool = False) -> None:
     st.markdown('<div class="section-kicker">Lectura territorial</div>', unsafe_allow_html=True)
     st.header("Mapa del cuidado por alcaldía")
     st.markdown(
@@ -535,11 +564,11 @@ def mostrar_visor_territorial(dataset) -> None:
             "Déficit de Infraestructura (Guarderías)",
             "Abandono Laboral por Cuidados",
         ],
-        horizontal=True,
+        horizontal=not es_movil,
     )
     _mostrar_contexto_enut(dataset)
     mapa = _crear_mapa(dataset, metrica)
-    _ = st_folium(mapa, use_container_width=True, height=560)
+    _ = st_folium(mapa, use_container_width=True, height=390 if es_movil else 560)
     st.markdown(
         f'<div class="source-strip"><p>{FUENTE_ACADEMICA}</p></div>',
         unsafe_allow_html=True,
@@ -565,20 +594,39 @@ def mostrar_visor_territorial(dataset) -> None:
         "Personas afectadas sin acceso",
         "Abandono laboral por cuidados",
     ]
-    st.dataframe(
-        tabla.style.format(
-            {
-                "Población que requiere cuidado": "{:,.0f}",
-                "Guarderías disponibles": "{:,.0f}",
-                "Cobertura CACI (0-2)": "{:.1f}%",
-                "Matrícula CACI": "{:,.0f}",
-                "Personas afectadas sin acceso": "{:,.0f}",
-                "Abandono laboral por cuidados": "{:,.0f}",
-            }
-        ),
-        use_container_width=True,
-        hide_index=True,
-    )
+    formato_tabla = {
+        "Población que requiere cuidado": "{:,.0f}",
+        "Guarderías disponibles": "{:,.0f}",
+        "Cobertura CACI (0-2)": "{:.1f}%",
+        "Matrícula CACI": "{:,.0f}",
+        "Personas afectadas sin acceso": "{:,.0f}",
+        "Abandono laboral por cuidados": "{:,.0f}",
+    }
+    if es_movil:
+        st.subheader("Resumen por alcaldía")
+        for _, fila in tabla.iterrows():
+            with st.expander(fila["Alcaldía"], expanded=False):
+                st.metric(
+                    "Personas afectadas sin acceso",
+                    formato_tabla["Personas afectadas sin acceso"].format(
+                        fila["Personas afectadas sin acceso"]
+                    ),
+                )
+                st.write(
+                    f"**Cobertura CACI:** {formato_tabla['Cobertura CACI (0-2)'].format(fila['Cobertura CACI (0-2)'])}"
+                )
+                st.write(
+                    f"**Guarderías:** {formato_tabla['Guarderías disponibles'].format(fila['Guarderías disponibles'])}"
+                )
+                st.write(
+                    f"**Abandono laboral:** {formato_tabla['Abandono laboral por cuidados'].format(fila['Abandono laboral por cuidados'])}"
+                )
+    else:
+        st.dataframe(
+            tabla.style.format(formato_tabla),
+            use_container_width=True,
+            hide_index=True,
+        )
     st.subheader("Indicadores territoriales de oferta y demanda")
     indicadores_territoriales = dataset.set_index(
         dataset["alcaldia"].map(_formato_alcaldia)
@@ -595,7 +643,195 @@ def mostrar_visor_territorial(dataset) -> None:
             "abandono_laboral_cuidados": "Abandono laboral por cuidados",
         }
     )
-    st.bar_chart(indicadores_territoriales)
+    if not es_movil:
+        st.bar_chart(indicadores_territoriales)
+
+
+def mostrar_comparativo_cuidado(
+    dataset: pd.DataFrame, es_movil: bool = False
+) -> None:
+    """Presenta un comparativo territorial orientado a la toma de decisiones."""
+
+    st.markdown(
+        '<div class="section-kicker">Comparativo territorial</div>',
+        unsafe_allow_html=True,
+    )
+    st.header("Brechas de cuidado por alcaldía")
+    st.markdown(
+        '<div class="section-card">Selecciona un indicador para ordenar las '
+        "alcaldías y observa cómo se relacionan la oferta de servicios, la "
+        "demanda de cuidado y sus efectos laborales.</div>",
+        unsafe_allow_html=True,
+    )
+
+    columnas_requeridas = {
+        "alcaldia",
+        "cobertura_caci_0_2_pct",
+        "guarderias_por_1000_habitantes",
+        "personas_afectadas",
+        "abandono_laboral_cuidados",
+        "poblacion_dependiente",
+        "No_Guard",
+    }
+    faltantes = columnas_requeridas.difference(dataset.columns)
+    if faltantes:
+        raise ValueError(
+            "El comparativo territorial requiere columnas ausentes: "
+            + ", ".join(sorted(faltantes))
+        )
+
+    indicadores = {
+        "Personas afectadas sin acceso": {
+            "columna": "personas_afectadas",
+            "formato": "{:,.0f}",
+            "descripcion": "Mayor valor = mayor cantidad estimada de infantes sin cobertura.",
+        },
+        "Abandono laboral por cuidados": {
+            "columna": "abandono_laboral_cuidados",
+            "formato": "{:,.0f}",
+            "descripcion": "Mayor valor = mayor impacto laboral asociado al cuidado.",
+        },
+        "Cobertura CACI (0-2)": {
+            "columna": "cobertura_caci_0_2_pct",
+            "formato": "{:.1f}%",
+            "descripcion": "Menor valor = menor cobertura de atención infantil.",
+        },
+        "Guarderías por 1,000 habitantes": {
+            "columna": "guarderias_por_1000_habitantes",
+            "formato": "{:.2f}",
+            "descripcion": "Menor valor = menor disponibilidad relativa de guarderías.",
+        },
+    }
+    indicador = st.selectbox(
+        "Indicador para ordenar el ranking",
+        list(indicadores),
+        key="comparativo_indicador",
+    )
+    configuracion = indicadores[indicador]
+    columna_indicador = configuracion["columna"]
+    ranking_ascendente = indicador in {
+        "Cobertura CACI (0-2)",
+        "Guarderías por 1,000 habitantes",
+    }
+
+    comparativo = dataset[
+        [
+            "alcaldia",
+            "poblacion_dependiente",
+            "No_Guard",
+            "cobertura_caci_0_2_pct",
+            "guarderias_por_1000_habitantes",
+            "personas_afectadas",
+            "abandono_laboral_cuidados",
+        ]
+    ].copy()
+    comparativo["alcaldia"] = comparativo["alcaldia"].map(_formato_alcaldia)
+    comparativo[columna_indicador] = pd.to_numeric(
+        comparativo[columna_indicador], errors="coerce"
+    ).fillna(0)
+    comparativo = comparativo.sort_values(
+        columna_indicador,
+        ascending=ranking_ascendente,
+    ).reset_index(drop=True)
+    comparativo.insert(0, "Posición", range(1, len(comparativo) + 1))
+
+    zonas = sorted(comparativo["alcaldia"].tolist())
+    zona = st.selectbox(
+        "Alcaldía para el resumen ejecutivo",
+        zonas,
+        key="comparativo_alcaldia",
+    )
+    fila = comparativo.loc[comparativo["alcaldia"] == zona].iloc[0]
+    posicion = int(
+        comparativo.index[comparativo["alcaldia"] == zona][0] + 1
+    )
+    promedio = comparativo[columna_indicador].mean()
+    valor = float(fila[columna_indicador])
+    diferencia = valor - promedio
+    direccion = "por encima" if diferencia >= 0 else "por debajo"
+
+    metricas = [
+        ("Indicador seleccionado", configuracion["formato"].format(valor)),
+        ("Posición en el ranking", f"{posicion} de {len(comparativo)}"),
+        ("Guarderías disponibles", f"{float(fila['No_Guard']):,.0f}"),
+        ("Población dependiente", f"{float(fila['poblacion_dependiente']):,.0f}"),
+    ]
+    if es_movil:
+        for etiqueta, valor_kpi in metricas:
+            st.metric(etiqueta, valor_kpi)
+    else:
+        columnas = st.columns(len(metricas))
+        for columna, (etiqueta, valor_kpi) in zip(columnas, metricas):
+            columna.metric(etiqueta, valor_kpi)
+
+    st.caption(
+        f"{configuracion['descripcion']} La alcaldía seleccionada está "
+        f"{abs(diferencia):,.2f} unidades {direccion} del promedio de la CDMX."
+    )
+
+    st.subheader(f"Resumen ejecutivo · {zona}")
+    st.markdown(
+        f'<div class="section-card"><strong>{zona}</strong> ocupa la posición '
+        f"<strong>{posicion}</strong> del ranking de <strong>{indicador.lower()}"
+        f"</strong>, con un valor de <strong>"
+        f"{configuracion['formato'].format(valor)}</strong>. Registra "
+        f"<strong>{float(fila['cobertura_caci_0_2_pct']):.1f}%</strong> de "
+        f"cobertura CACI para población de 0 a 2 años, "
+        f"<strong>{float(fila['personas_afectadas']):,.0f}</strong> personas "
+        "afectadas sin acceso y "
+        f"<strong>{float(fila['abandono_laboral_cuidados']):,.0f}</strong> "
+        "casos estimados de abandono laboral por cuidados.</div>",
+        unsafe_allow_html=True,
+    )
+
+    st.subheader("Ranking territorial")
+    tabla = comparativo.rename(
+        columns={
+            "alcaldia": "Alcaldía",
+            "poblacion_dependiente": "Población dependiente",
+            "No_Guard": "Guarderías",
+            "cobertura_caci_0_2_pct": "Cobertura CACI (%)",
+            "guarderias_por_1000_habitantes": "Guarderías / 1,000 hab.",
+            "personas_afectadas": "Personas afectadas",
+            "abandono_laboral_cuidados": "Abandono laboral por cuidados",
+        }
+    )
+    formato_comparativo = {
+        "Población dependiente": "{:,.0f}",
+        "Guarderías": "{:,.0f}",
+        "Cobertura CACI (%)": "{:.1f}%",
+        "Guarderías / 1,000 hab.": "{:.2f}",
+        "Personas afectadas": "{:,.0f}",
+        "Abandono laboral por cuidados": "{:,.0f}",
+    }
+    if es_movil:
+        for _, fila_ranking in tabla.iterrows():
+            with st.expander(
+                f"{int(fila_ranking['Posición'])}. {fila_ranking['Alcaldía']}",
+                expanded=False,
+            ):
+                st.write(
+                    f"**{indicador}:** {configuracion['formato'].format(float(fila_ranking[columna_indicador]))}"
+                )
+                st.write(
+                    f"**Cobertura CACI:** {formato_comparativo['Cobertura CACI (%)'].format(fila_ranking['Cobertura CACI (%)'])}"
+                )
+                st.write(
+                    f"**Personas afectadas:** {formato_comparativo['Personas afectadas'].format(fila_ranking['Personas afectadas'])}"
+                )
+    else:
+        st.dataframe(
+            tabla.style.format(formato_comparativo).background_gradient(
+                subset=list(formato_comparativo),
+                cmap="Purples",
+            ),
+            use_container_width=True,
+            hide_index=True,
+        )
+    st.markdown(
+        f'<div class="source-strip"><p>{FUENTE_ACADEMICA}</p></div>',
+        unsafe_allow_html=True,
+    )
 
 
 def seed_datos_simulacion(
@@ -718,7 +954,7 @@ def seed_datos_simulacion(
         engine.dispose()
 
 
-def mostrar_simulador(dataset: pd.DataFrame) -> None:
+def mostrar_simulador(dataset: pd.DataFrame, es_movil: bool = False) -> None:
     st.markdown('<div class="section-kicker">Escenario de simulación</div>', unsafe_allow_html=True)
     st.header("Simulación de asignación de cuidados")
     st.markdown(
@@ -738,11 +974,24 @@ def mostrar_simulador(dataset: pd.DataFrame) -> None:
         "población dependiente y déficit territorial observadas en las fuentes."
     )
 
-    if st.button(
-        "Ejecutar Simulación de Asignación",
+    boton = st.button(
+        "Iniciar simulación" if es_movil else "Ejecutar Simulación de Asignación",
         type="primary",
         use_container_width=True,
-    ):
+        key="simulador_ejecutar",
+    )
+    if es_movil:
+        st.markdown(
+            '<div class="mobile-step"><strong>Paso 1 · Zona</strong><br>'
+            "Selecciona la alcaldía donde quieres observar el piloto.</div>",
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            '<div class="mobile-step"><strong>Paso 2 · Simulación</strong><br>'
+            "Pulsa el botón para estimar cuántas familias encuentran apoyo.</div>",
+            unsafe_allow_html=True,
+        )
+    if boton:
         solicitudes_frame, oferentes_frame = seed_datos_simulacion(
             dataset, zona
         )
@@ -753,10 +1002,15 @@ def mostrar_simulador(dataset: pd.DataFrame) -> None:
         vinculadas = int((resultado["estado"] == "emparejada").sum())
         sin_cobertura = familias - vinculadas
 
-        columnas = st.columns(3)
-        columnas[0].metric("Familias que piden apoyo", f"{familias:,}")
-        columnas[1].metric("Familias vinculadas", f"{vinculadas:,}")
-        columnas[2].metric("Familias sin cobertura", f"{sin_cobertura:,}")
+        if es_movil:
+            st.metric("Familias que piden apoyo", f"{familias:,}")
+            st.metric("Familias vinculadas", f"{vinculadas:,}")
+            st.metric("Familias sin cobertura", f"{sin_cobertura:,}")
+        else:
+            columnas = st.columns(3)
+            columnas[0].metric("Familias que piden apoyo", f"{familias:,}")
+            columnas[1].metric("Familias vinculadas", f"{vinculadas:,}")
+            columnas[2].metric("Familias sin cobertura", f"{sin_cobertura:,}")
 
         if sin_cobertura:
             st.warning(
@@ -816,6 +1070,17 @@ def mostrar_transparencia() -> None:
 
 def main() -> None:
     dataset = cargar_evidencia()
+    ancho_pantalla = st_javascript("window.innerWidth")
+    if not isinstance(ancho_pantalla, (int, float)):
+        ancho_pantalla = 1024
+    es_movil = ancho_pantalla < 768
+    st.session_state["es_movil"] = es_movil
+    st.markdown(
+        f'<div class="source-strip"><p>Vista '
+        f'{"móvil" if es_movil else "escritorio"} · '
+        f'{int(ancho_pantalla)} px</p></div>',
+        unsafe_allow_html=True,
+    )
     st.markdown(
         '<div class="brand-mark"><span>💜</span> Observatorio del Cuidado</div>',
         unsafe_allow_html=True,
@@ -835,18 +1100,25 @@ def main() -> None:
         """,
         unsafe_allow_html=True,
     )
-    _metricas_principales(dataset)
+    _metricas_principales(dataset, es_movil)
     st.markdown(
         f'<div class="source-strip"><p>{FUENTE_ACADEMICA}</p></div>',
         unsafe_allow_html=True,
     )
-    visor, simulador, transparencia = st.tabs(
-        [" Visor Territorial", " Simulador de Vinculación", " Transparencia"]
+    visor, comparativo, simulador, transparencia = st.tabs(
+        [
+            " Visor Territorial",
+            " Comparativo de Cuidado",
+            " Simulador de Vinculación",
+            " Transparencia",
+        ]
     )
     with visor:
-        mostrar_visor_territorial(dataset)
+        mostrar_visor_territorial(dataset, es_movil)
+    with comparativo:
+        mostrar_comparativo_cuidado(dataset, es_movil)
     with simulador:
-        mostrar_simulador(dataset)
+        mostrar_simulador(dataset, es_movil)
     with transparencia:
         mostrar_transparencia()
 
