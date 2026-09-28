@@ -1,8 +1,10 @@
-"""Motor base de vinculación para el piloto del sistema de cuidados.
+"""Motor base de vinculación para el piloto de inversión social en cuidados.
 
 El motor trabaja únicamente con identificadores seudonimizados y las columnas
 operativas de ``Solicitudes`` y ``Oferentes``. No incorpora nombres, género ni
-otros atributos personales.
+otros atributos personales. Su resultado orienta una inversión en capital
+humano y facilita medir el retorno de inversión social de una vinculación
+compatible, sin sustituir una evaluación laboral o financiera.
 """
 
 from __future__ import annotations
@@ -78,11 +80,12 @@ class MotorMatching:
         solicitudes: pd.DataFrame,
         oferentes: pd.DataFrame,
     ) -> pd.DataFrame:
-        """Retorna un resultado por solicitud, emparejada o no.
+        """Retorna un resultado por solicitud, vinculada o pendiente.
 
         Las columnas de salida incluyen ``estado``, ``motivo``,
         ``distancia_km``, ``compatibilidad_horaria`` y ``puntuacion`` para
-        que el Dashboard pueda auditar cobertura y demanda no atendida.
+        que el Dashboard pueda auditar la cobertura, la inversión social
+        alcanzada y la demanda pendiente.
         """
 
         solicitudes = self._validar_y_copiar(

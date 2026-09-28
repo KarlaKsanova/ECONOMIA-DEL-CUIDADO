@@ -100,6 +100,39 @@ st.markdown(
             box-shadow: 0 10px 28px rgba(30, 41, 59, 0.06);
             margin: 0.25rem 0 1rem 0;
         }
+        .structural-gaps {
+            margin: 1.15rem 0 1.35rem 0;
+        }
+        .structural-gaps-intro {
+            margin: 0 0 0.85rem 0;
+            color: #475569 !important;
+        }
+        .structural-gap-card {
+            min-height: 148px;
+            background: linear-gradient(155deg, #FFFFFF 0%, #F8FAFF 100%);
+            border: 1px solid rgba(91, 33, 182, 0.14);
+            border-top: 4px solid var(--gap-accent);
+            border-radius: 16px;
+            padding: 0.9rem 0.85rem;
+            box-shadow: 0 10px 24px rgba(30, 41, 59, 0.08);
+        }
+        .structural-gap-icon {
+            font-size: 1.65rem;
+            line-height: 1;
+            margin-bottom: 0.45rem;
+        }
+        .structural-gap-card h3 {
+            color: #31333F !important;
+            font-size: 1rem;
+            line-height: 1.2;
+            margin: 0 0 0.45rem 0;
+        }
+        .structural-gap-card p {
+            color: #475569 !important;
+            font-size: 0.88rem;
+            line-height: 1.35;
+            margin: 0;
+        }
         [data-testid="stAppViewContainer"] h1,
         [data-testid="stAppViewContainer"] h2,
         [data-testid="stAppViewContainer"] h3,
@@ -567,6 +600,61 @@ def mostrar_visor_territorial(dataset, es_movil: bool = False) -> None:
         horizontal=not es_movil,
     )
     _mostrar_contexto_enut(dataset)
+    st.markdown(
+        """
+        <div class="structural-gaps">
+            <div class="section-kicker">Eje central del análisis</div>
+            <h2>Las 4 Brechas Estructurales del cuidado</h2>
+            <p class="structural-gaps-intro">
+                El mapa permite observar cómo estas desigualdades se expresan
+                territorialmente en la Ciudad de México.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    brechas = [
+        (
+            "🌍",
+            "Brecha Geográfica",
+            "Concentración urbana vs. déficit rural.",
+            "#2563EB",
+        ),
+        (
+            "👵",
+            "Brecha Generacional",
+            "Demanda por envejecimiento vs. oferta pública.",
+            "#7C3AED",
+        ),
+        (
+            "👩",
+            "Brecha de Género",
+            "<strong>75%</strong> de la carga recae en mujeres sin compensación.",
+            "#DB2777",
+        ),
+        (
+            "🏢",
+            "Brecha de Formalidad",
+            "<strong>80%</strong> del sector opera en la informalidad.",
+            "#0F766E",
+        ),
+    ]
+    columnas_brechas = st.columns(4)
+    for columna, (icono, titulo, descripcion, acento) in zip(
+        columnas_brechas, brechas
+    ):
+        columna.markdown(
+            f"""
+            <div class="structural-gap-card" style="--gap-accent: {acento};">
+                <div class="structural-gap-icon" role="img" aria-label="{titulo}">
+                    {icono}
+                </div>
+                <h3>{titulo}</h3>
+                <p>{descripcion}</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
     mapa = _crear_mapa(dataset, metrica)
     _ = st_folium(mapa, use_container_width=True, height=390 if es_movil else 560)
     st.markdown(
@@ -954,13 +1042,75 @@ def seed_datos_simulacion(
         engine.dispose()
 
 
+def mostrar_perspectiva_empresarial() -> None:
+    """Presenta el valor compartido de invertir en políticas de cuidado."""
+
+    st.markdown(
+        '<div class="section-kicker">Valor compartido</div>',
+        unsafe_allow_html=True,
+    )
+    st.header("El Retorno de Inversión (ROI) en el Cuidado")
+    st.markdown(
+        '<div class="section-card">Invertir en corresponsabilidad y conciliación '
+        "laboral reduce costos ocultos, protege el talento y fortalece la "
+        "productividad. El bienestar social y la rentabilidad empresarial "
+        "son interdependientes.</div>",
+        unsafe_allow_html=True,
+    )
+
+    st.subheader("Beneficios corporativos de invertir en cuidado")
+    columnas_impacto = st.columns(3)
+    metricas_impacto = [
+        ("Reducción de ausentismo", "-30%", "Menos interrupciones operativas"),
+        ("Retención de talento femenino", "+45%", "Mayor permanencia del talento"),
+        (
+            "Incremento en productividad general",
+            "Positivo",
+            "Más continuidad y compromiso",
+        ),
+    ]
+    for columna, (etiqueta, valor, ayuda) in zip(
+        columnas_impacto, metricas_impacto
+    ):
+        with columna:
+            st.metric(etiqueta, valor)
+            st.caption(ayuda)
+
+    st.subheader("Costo de no actuar vs. inversión en conciliación")
+    st.markdown(
+        "Escenario ilustrativo con un índice anualizado: el costo de la alta "
+        "rotación incluye reemplazo, capacitación y pérdida de continuidad, "
+        "mientras que la política de conciliación representa una inversión "
+        "preventiva."
+    )
+    escenario_roi = pd.DataFrame(
+        {
+            "Índice de costo / inversión": {
+                "Costo de alta rotación": 100,
+                "Política de conciliación laboral": 35,
+            }
+        }
+    )
+    st.bar_chart(escenario_roi, horizontal=True)
+    st.info(
+        "Lectura del escenario: por cada 100 unidades de costo asociadas a la "
+        "rotación, una política de conciliación de 35 unidades deja un margen "
+        "potencial de 65 unidades. Los valores son simulados y deben sustituirse "
+        "por datos financieros de cada organización."
+    )
+
+
 def mostrar_simulador(dataset: pd.DataFrame, es_movil: bool = False) -> None:
-    st.markdown('<div class="section-kicker">Escenario de simulación</div>', unsafe_allow_html=True)
-    st.header("Simulación de asignación de cuidados")
+    st.markdown(
+        '<div class="section-kicker">Inversión social y capital humano</div>',
+        unsafe_allow_html=True,
+    )
+    st.header("Simulación de vinculación: retorno de inversión social")
     st.markdown(
         '<div class="section-card">Esta simulación usa datos reales del proyecto '
-        "para mostrar, de forma clara, qué pasa cuando muchas familias necesitan "
-        "apoyo y la oferta no alcanza.</div>",
+        "para mostrar cómo una vinculación de cuidados fortalece el capital "
+        "humano, reduce la pobreza de tiempo y genera retorno de inversión "
+        "social cuando la oferta disponible es limitada.</div>",
         unsafe_allow_html=True,
     )
     alcaldias = sorted(dataset["alcaldia"].dropna().unique())
@@ -971,7 +1121,9 @@ def mostrar_simulador(dataset: pd.DataFrame, es_movil: bool = False) -> None:
     )
     st.caption(
         f"Escenario construido para {zona.title()} con proporciones reales de "
-        "población dependiente y déficit territorial observadas en las fuentes."
+        "población dependiente y déficit territorial observadas en las fuentes. "
+        "La vinculación se interpreta como una inversión en bienestar y "
+        "continuidad laboral."
     )
 
     boton = st.button(
@@ -1003,14 +1155,20 @@ def mostrar_simulador(dataset: pd.DataFrame, es_movil: bool = False) -> None:
         sin_cobertura = familias - vinculadas
 
         if es_movil:
-            st.metric("Familias que piden apoyo", f"{familias:,}")
-            st.metric("Familias vinculadas", f"{vinculadas:,}")
-            st.metric("Familias sin cobertura", f"{sin_cobertura:,}")
+            st.metric("Familias que solicitan inversión social", f"{familias:,}")
+            st.metric("Familias vinculadas · capital humano protegido", f"{vinculadas:,}")
+            st.metric("Familias pendientes de vinculación", f"{sin_cobertura:,}")
         else:
             columnas = st.columns(3)
-            columnas[0].metric("Familias que piden apoyo", f"{familias:,}")
-            columnas[1].metric("Familias vinculadas", f"{vinculadas:,}")
-            columnas[2].metric("Familias sin cobertura", f"{sin_cobertura:,}")
+            columnas[0].metric(
+                "Familias que solicitan inversión social", f"{familias:,}"
+            )
+            columnas[1].metric(
+                "Familias vinculadas · capital humano protegido", f"{vinculadas:,}"
+            )
+            columnas[2].metric(
+                "Familias pendientes de vinculación", f"{sin_cobertura:,}"
+            )
 
         if sin_cobertura:
             st.warning(
@@ -1018,8 +1176,18 @@ def mostrar_simulador(dataset: pd.DataFrame, es_movil: bool = False) -> None:
                 "simulación porque la oferta disponible no fue suficiente."
             )
         else:
-            st.success("Todas las familias encontraron una cuidadora compatible.")
+            st.success(
+                "La inversión social alcanzó a todas las familias del escenario: "
+                "la vinculación fortalece el capital humano y favorece la "
+                "reinserción de las mujeres en la PEA."
+            )
 
+        st.success(
+            f"Esta vinculación mitiga la pobreza de tiempo para {vinculadas:,} "
+            "familias y fomenta la reinserción de la mujer al mercado laboral "
+            "(PEA), al liberar tiempo para el trabajo remunerado y la "
+            "participación económica."
+        )
         st.info(
             "Transparencia del algoritmo: el motor prioriza cercanía y horarios; "
             f"sin embargo, por el déficit estructural de oferta, {sin_cobertura} "
@@ -1105,10 +1273,11 @@ def main() -> None:
         f'<div class="source-strip"><p>{FUENTE_ACADEMICA}</p></div>',
         unsafe_allow_html=True,
     )
-    visor, comparativo, simulador, transparencia = st.tabs(
+    visor, comparativo, empresarial, simulador, transparencia = st.tabs(
         [
             " Visor Territorial",
             " Comparativo de Cuidado",
+            " Perspectiva Empresarial: Valor Compartido",
             " Simulador de Vinculación",
             " Transparencia",
         ]
@@ -1117,6 +1286,8 @@ def main() -> None:
         mostrar_visor_territorial(dataset, es_movil)
     with comparativo:
         mostrar_comparativo_cuidado(dataset, es_movil)
+    with empresarial:
+        mostrar_perspectiva_empresarial()
     with simulador:
         mostrar_simulador(dataset, es_movil)
     with transparencia:
