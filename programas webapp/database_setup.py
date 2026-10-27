@@ -9,8 +9,12 @@ from __future__ import annotations
 
 import os
 import uuid
+import sys
 from datetime import datetime, time
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from cuidado.database.conexion import crear_engine
 
 from sqlalchemy import CheckConstraint, DateTime, Float, String, Time, create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -105,7 +109,7 @@ def crear_base_de_datos(
         ruta_sqlite = os.path.join(ROOT_DIR, ruta_sqlite)
     ruta_sqlite = os.path.abspath(ruta_sqlite)
     database_url = os.getenv("DATABASE_URL") or f"sqlite:///{ruta_sqlite}"
-    engine = create_engine(database_url)
+    engine = crear_engine(database_url)
     try:
         Base.metadata.create_all(engine)
     finally:
