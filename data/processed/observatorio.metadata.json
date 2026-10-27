@@ -1,0 +1,34 @@
+{
+  "indicadores_pobreza_tiempo_cdmx": {
+    "enut_poblacion_12_mas": 8350019.0,
+    "enut_personas_que_cuidan": 5106550.0,
+    "enut_porcentaje_que_cuida": 61.15614826744705,
+    "enut_horas_promedio_cuidado": 10.336899119757957,
+    "enut_horas_cuidado_mujeres": 12.16
+  },
+  "fuente_pobreza_tiempo": "ENUT_2024_CDMX_resumen_ponderado.csv",
+  "indicadores_macro_economia_cuidado": {
+    "Valor total TNRH Nacional (2024)": "8,011,499 MDP",
+    "Porcentaje del PIB Nacional TNRH": "23.9%",
+    "Aportación promedio anual por mujer": "$82,339 MXN",
+    "Aportación promedio anual por hombre": "$34,695 MXN",
+    "Porcentaje del TNRH aportado por mujeres": "74.7%",
+    "Participación del TNRH en el PIB CDMX": "11.6%",
+    "Participación de la CDMX en el TNRH Nacional": "6.7%",
+    "Población susceptible de recibir cuidados (Nacional)": "58.3 millones",
+    "Población susceptible de recibir cuidados (CDMX)": "3.018 millones (32.4% pop)",
+    "Población cuidadora de 15+ años (Nacional)": "31.7 millones (75.1% mujeres)",
+    "Horas semanales promedio de cuidado (Mujeres)": "38.9 horas/semana",
+    "Horas semanales promedio de cuidado (Hombres)": "30.6 horas/semana",
+    "Cobertura de cuidados en adultos mayores (60+)": "22.4%",
+    "Inactividad laboral femenina por falta de estancias infantiles": "68.4%",
+    "Inactividad laboral femenina por falta de cuidado a adultos mayores/enfermos": "78.4%"
+  },
+  "fuentes_evidencia": [
+    "ENUT_2024_CDMX_resumen_ponderado.csv",
+    "base_censo_CDMX_observatorio_v1.csv",
+    "Equipamiento_de_asistencia_social.shp",
+    "datos_observatorio_cuidado_alcaldias_cdmx.csv",
+    "indicadores_macro_economia_cuidado.csv"
+  ]
+}
