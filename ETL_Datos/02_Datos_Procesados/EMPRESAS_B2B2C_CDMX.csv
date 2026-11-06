@@ -1,0 +1,51 @@
+﻿d_codigo,d_asenta,D_mnpio,d_estado,empresa_id,nombre_empresa,sector,num_empleados,porcentaje_transporte_publico,empleados_transporte_publico,turno_laboral,interes_movilidad
+02050,Libertad,Azcapotzalco,Ciudad de México,EMP_001,Empresa Simulada 001,Comercio,383,80,306,Mixto,Medio
+02870,San Salvador Xochimanca,Azcapotzalco,Ciudad de México,EMP_002,Empresa Simulada 002,Manufactura,105,42,44,Matutino,Bajo
+02200,Reynosa Tamaulipas,Azcapotzalco,Ciudad de México,EMP_003,Empresa Simulada 003,Manufactura,188,79,149,Mixto,Medio
+03023,Narvarte Oriente,Benito Juárez,Ciudad de México,EMP_004,Empresa Simulada 004,Tecnología,239,30,72,Matutino,Bajo
+03910,Mixcoac,Benito Juárez,Ciudad de México,EMP_005,Empresa Simulada 005,Tecnología,254,78,198,Vespertino,Medio
+03600,Vértiz Narvarte,Benito Juárez,Ciudad de México,EMP_006,Empresa Simulada 006,Logística,31,78,24,Vespertino,Alto
+04490,Culhuacán CTM Sección Piloto,Coyoacán,Ciudad de México,EMP_007,Empresa Simulada 007,Comercio,278,77,214,Matutino,Bajo
+04730,Cantil del Pedregal,Coyoacán,Ciudad de México,EMP_008,Empresa Simulada 008,Manufactura,85,70,60,Vespertino,Bajo
+04390,Huayamilpas,Coyoacán,Ciudad de México,EMP_009,Empresa Simulada 009,Servicios,374,58,217,Vespertino,Alto
+05500,Contadero,Cuajimalpa de Morelos,Ciudad de México,EMP_010,Empresa Simulada 010,Comercio,345,73,252,Mixto,Bajo
+05220,Tepetongo,Cuajimalpa de Morelos,Ciudad de México,EMP_011,Empresa Simulada 011,Tecnología,462,46,213,Mixto,Alto
+05269,Amado Nervo,Cuajimalpa de Morelos,Ciudad de México,EMP_012,Empresa Simulada 012,Logística,375,77,289,Vespertino,Bajo
+06920,San Simón Tolnáhuac,Cuauhtémoc,Ciudad de México,EMP_013,Empresa Simulada 013,Manufactura,190,63,120,Vespertino,Bajo
+06350,Buenavista,Cuauhtémoc,Ciudad de México,EMP_014,Empresa Simulada 014,Manufactura,485,57,276,Vespertino,Medio
+06200,Morelos,Cuauhtémoc,Ciudad de México,EMP_015,Empresa Simulada 015,Manufactura,211,60,127,Vespertino,Bajo
+07020,Tepeyac Insurgentes,Gustavo A. Madero,Ciudad de México,EMP_016,Empresa Simulada 016,Manufactura,169,64,108,Mixto,Alto
+07900,Cuchilla del Tesoro,Gustavo A. Madero,Ciudad de México,EMP_017,Empresa Simulada 017,Tecnología,454,32,145,Matutino,Alto
+07940,Ex Ejido San Juan de Aragón Sector 33,Gustavo A. Madero,Ciudad de México,EMP_018,Empresa Simulada 018,Comercio,191,38,73,Matutino,Alto
+08230,San Francisco Xicaltongo,Iztacalco,Ciudad de México,EMP_019,Empresa Simulada 019,Logística,47,44,21,Vespertino,Medio
+08830,Militar Marte,Iztacalco,Ciudad de México,EMP_020,Empresa Simulada 020,Tecnología,240,36,86,Matutino,Bajo
+08030,Gabriel Ramos Millán Sección Cuchilla,Iztacalco,Ciudad de México,EMP_021,Empresa Simulada 021,Tecnología,400,56,224,Matutino,Alto
+09600,Santiago Acahualtepec,Iztapalapa,Ciudad de México,EMP_022,Empresa Simulada 022,Servicios,103,70,72,Matutino,Medio
+09670,Palmitas,Iztapalapa,Ciudad de México,EMP_023,Empresa Simulada 023,Comercio,237,69,164,Mixto,Bajo
+09689,Barranca de Guadalupe,Iztapalapa,Ciudad de México,EMP_024,Empresa Simulada 024,Logística,73,58,42,Mixto,Alto
+10700,Héroes de Padierna,La Magdalena Contreras,Ciudad de México,EMP_025,Empresa Simulada 025,Manufactura,347,82,285,Mixto,Bajo
+10300,San Bernabé Ocotepec,La Magdalena Contreras,Ciudad de México,EMP_026,Empresa Simulada 026,Manufactura,243,64,156,Vespertino,Alto
+10800,La Cruz,La Magdalena Contreras,Ciudad de México,EMP_027,Empresa Simulada 027,Tecnología,172,34,58,Mixto,Bajo
+11920,Real de las Lomas,Miguel Hidalgo,Ciudad de México,EMP_028,Empresa Simulada 028,Logística,121,76,92,Matutino,Medio
+11840,Ampliación Daniel Garza,Miguel Hidalgo,Ciudad de México,EMP_029,Empresa Simulada 029,Tecnología,287,65,187,Mixto,Medio
+11490,Cuauhtémoc Pensil,Miguel Hidalgo,Ciudad de México,EMP_030,Empresa Simulada 030,Tecnología,338,68,230,Vespertino,Alto
+12300,San Salvador Cuauhtenco,Milpa Alta,Ciudad de México,EMP_031,Empresa Simulada 031,Tecnología,471,64,301,Mixto,Medio
+12930,San Miguel,Milpa Alta,Ciudad de México,EMP_032,Empresa Simulada 032,Servicios,224,63,141,Matutino,Bajo
+12700,San Francisco Tecoxpa,Milpa Alta,Ciudad de México,EMP_033,Empresa Simulada 033,Comercio,88,35,31,Vespertino,Alto
+14900,Parres El Guarda,Tlalpan,Ciudad de México,EMP_034,Empresa Simulada 034,Tecnología,418,64,268,Mixto,Bajo
+14380,A.M.S.A,Tlalpan,Ciudad de México,EMP_035,Empresa Simulada 035,Logística,319,78,249,Vespertino,Medio
+14440,Los Volcanes,Tlalpan,Ciudad de México,EMP_036,Empresa Simulada 036,Comercio,353,48,169,Vespertino,Bajo
+13420,Selene,Tláhuac,Ciudad de México,EMP_037,Empresa Simulada 037,Logística,57,66,38,Matutino,Medio
+13000,La Asunción,Tláhuac,Ciudad de México,EMP_038,Empresa Simulada 038,Logística,163,31,51,Vespertino,Medio
+13600,San Bartolomé,Tláhuac,Ciudad de México,EMP_039,Empresa Simulada 039,Servicios,387,51,197,Matutino,Alto
+15100,Zona Centro,Venustiano Carranza,Ciudad de México,EMP_040,Empresa Simulada 040,Manufactura,418,56,234,Matutino,Medio
+15390,7 de Julio,Venustiano Carranza,Ciudad de México,EMP_041,Empresa Simulada 041,Comercio,223,89,198,Mixto,Alto
+15610,Cuchilla Pantitlán,Venustiano Carranza,Ciudad de México,EMP_042,Empresa Simulada 042,Manufactura,405,43,174,Vespertino,Medio
+16083,Caltongo,Xochimilco,Ciudad de México,EMP_043,Empresa Simulada 043,Manufactura,423,46,195,Vespertino,Alto
+16739,San Isidro,Xochimilco,Ciudad de México,EMP_044,Empresa Simulada 044,Servicios,200,54,108,Vespertino,Medio
+16813,El Calvario,Xochimilco,Ciudad de México,EMP_045,Empresa Simulada 045,Comercio,450,90,405,Mixto,Medio
+01408,Olivar del Conde 2a Sección,Álvaro Obregón,Ciudad de México,EMP_046,Empresa Simulada 046,Logística,151,82,124,Matutino,Alto
+01240,Pueblo Nuevo,Álvaro Obregón,Ciudad de México,EMP_047,Empresa Simulada 047,Tecnología,127,32,41,Vespertino,Bajo
+01120,Acueducto,Álvaro Obregón,Ciudad de México,EMP_048,Empresa Simulada 048,Logística,345,44,152,Matutino,Medio
+01260,Calzada Jalalpa,Álvaro Obregón,Ciudad de México,EMP_049,Empresa Simulada 049,Manufactura,322,80,258,Vespertino,Bajo
+07210,Chalma de Guadalupe,Gustavo A. Madero,Ciudad de México,EMP_050,Empresa Simulada 050,Manufactura,78,33,26,Mixto,Alto
